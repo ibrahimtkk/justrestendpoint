@@ -1,0 +1,4 @@
+ut\com\veniture\plugins\tutorial\rest\MyRestResourceTest.class
+it\com\veniture\plugins\tutorial\rest\MyRestResourceFuncTest.class
+it\com\veniture\plugins\tutorial\MyComponentWiredTest.class
+ut\com\veniture\plugins\tutorial\MyComponentUnitTest.class
