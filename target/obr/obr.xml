@@ -1,7 +1,7 @@
-<repository lastmodified='20201010100140.144'>
+<repository lastmodified='20201010104146.869'>
   <resource id='com.veniture.plugins.tutorial.intern/1.0.0' symbolicname='com.veniture.plugins.tutorial.intern' presentationname='intern' uri='intern-1.0.0.jar' version='1.0.0'>
     <description>This is the com.veniture.plugins.tutorial:intern plugin for Atlassian Refapp.</description>
-    <size>328356</size>
+    <size>328355</size>
     <documentation>http://www.example.com/</documentation>
     <capability name='bundle'>
       <p n='symbolicname' v='com.veniture.plugins.tutorial.intern'/>

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
-Atlassian-Build-Date: 2020-10-10T22:01:37+0300
+Atlassian-Build-Date: 2020-10-10T22:41:45+0300
 Atlassian-Plugin-Key: com.veniture.plugins.tutorial.intern
-Bnd-LastModified: 1602356498784
+Bnd-LastModified: 1602358906203
 Build-Jdk: 11.0.7
 Built-By: BerkOffline
 Bundle-Description: This is the com.veniture.plugins.tutorial:intern plu

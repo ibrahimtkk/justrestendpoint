@@ -5,6 +5,7 @@ idea/
 pom.xml.tag
 
 intern.iml
+*.bat
 
 pom.xml.releaseBackup
 
