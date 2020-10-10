@@ -17,6 +17,6 @@ public class MyRestResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getMessage()
     {
-       return Response.ok(new MyRestResourceModel("Hello World")).build();
+       return Response.ok(new MyRestResourceModel("Hello venITure")).build();
     }
 }
