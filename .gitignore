@@ -4,6 +4,8 @@ idea/
 .target/
 pom.xml.tag
 
+intern.iml
+
 pom.xml.releaseBackup
 
 pom.xml.versionsBackup
