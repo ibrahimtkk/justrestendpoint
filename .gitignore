@@ -1,9 +1,8 @@
-target/
+target
 idea/
 .idea/
 .target/
 pom.xml.tag
-
 intern.iml
 *.bat
 
