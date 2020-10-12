@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.veniture.plugins.tutorial</groupId>
     <artifactId>intern</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <organization>
         <name>Example Company</name>
         <url>http://www.example.com/</url>
@@ -132,9 +132,11 @@
             <version>4.1.1</version>
             <scope>test</scope>
         </dependency>
-
-
-
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.7</version>
+        </dependency>
 
 
     </dependencies>

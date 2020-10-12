@@ -1,54 +1,59 @@
 <html>
 <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/table-to-json@0.13.0/lib/jquery.tabletojson.min.js" integrity="sha256-AqDz23QC5g2yyhRaZcEGhMMZwQnp8fC6sCZpf+e7pnw=" crossorigin="anonymous"></script>
+    <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
+
     <title>Edit Issue &mdash; Issue CRUD Tutorial</title>
     <meta name="decorator" content="atl.general">
+
+    <script>
+        AJS.$(document).ready(function () {
+            var newRow = $("<tr>");
+            var newRow2 = $("<tr>");
+            var cols = "";
+
+##            #foreach( $currency in $currencies )
+                ## console.log("...: " + $currency);
+            // cols += '<tr>'
+            cols += '<td> Dolar </td>';
+            cols += '<td> $dolarKuru </td>';
+            cols += '</tr>';
+            newRow.append(cols);
+            cols = "";
+            // cols += '</tr'
+            // cols += '<tr>'
+            cols += '<td> Euro </td>';
+            cols += '<td> $euroKuru </td>';
+            cols += '</tr>';
+##            #end
+
+            newRow2.append(cols);
+            $("table.table-bordered").append(newRow);
+            $("table.table-bordered").append(newRow2);
+        });
+    </script>
 </head>
 <body class="page-type-admin">
 <div class="content-container">
 
-    <div class="content-body">
-        <h1>Edit issue $issue.getKey()</h1>
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Currency Name</th>
+                <th scope="col">TL</th>
+            </tr>
+        </thead>
+        <tbody>
+##            <tr>
+##                <td>$dolarKuru</td>
+##                <td>$euroKuru</td>
+##            </tr>
+        </tbody>
+    </table>
 
-        #if ($errors.size()>0)
-            <div class="aui-message error shadowed">
-                #foreach($error in $errors)
-                    <p class="title">
-                        <span class="aui-icon icon-error"></span>
-                        <strong>$error</strong>
-                    </p>
-                #end
-            </div>
-            <!-- .aui-message -->
-        #end
-
-        <div class="create-issue-panel">
-
-            <form method="post" id="h" action="issuecrud" class="aui">
-                <input type="hidden" name="edit" value="y">
-                <input type="hidden" name="key" value="$issue.getKey()">
-                <div class="field-group">
-                    <label for="h-fsummary">
-                        Summary
-                        <span class="aui-icon icon-required"></span>
-                        <span class="content">required</span>
-                    </label>
-                    <input id="h-fsummary" class="text long-field" type="text" name="summary" value="$issue.getSummary()">
-                </div>
-                <div class="field-group">
-                    <label for="h-fdescription">
-                        Description
-                        <span class="aui-icon icon-required"></span>
-                        <span class="content">required</span>
-                    </label>
-                    <textarea id="h-fdescription" name="description">$issue.getDescription()</textarea>
-                </div>
-                <div class="buttons">
-                    <input class="button" type="submit" value="Update">
-                    <a href="issuecrud">Cancel</a>
-                </div>
-            </form>
-        </div>
-    </div>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 </div>
 </body>
 </html>

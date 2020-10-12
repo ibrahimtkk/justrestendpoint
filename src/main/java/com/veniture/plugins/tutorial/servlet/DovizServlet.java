@@ -3,10 +3,13 @@ package com.veniture.plugins.tutorial.servlet;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import com.google.gson.JsonElement;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
+import com.veniture.plugins.tutorial.dto.Rates;
+import com.veniture.plugins.tutorial.dto.Root;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
@@ -29,12 +31,13 @@ import com.atlassian.jira.config.ConstantsManager;
 
 import com.atlassian.jira.security.JiraAuthenticationContext;
 
-import java.util.Optional;
-
 @Scanned
 public class DovizServlet extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(DovizServlet.class);// The transition ID
+    private static final String DOVIZ_SCREEN_TEMPLATE = "/templates/doviz.vm";
+    private Rates rates;
+    private List<currency> currencies = new ArrayList<>();
 
     @JiraImport
     private TemplateRenderer templateRenderer;
@@ -49,7 +52,7 @@ public class DovizServlet extends HttpServlet {
     @JiraImport
     private ConstantsManager constantsManager;
 
-    private static final String DOVIZ_SCREEN_TEMPLATE = "/templates/doviz.vm";
+
 
     public DovizServlet(TemplateRenderer templateRenderer, IssueService issueService, ProjectService projectService, SearchService searchService, JiraAuthenticationContext authenticationContext, ConstantsManager constantsManager) {
         this.templateRenderer = templateRenderer;
@@ -62,27 +65,29 @@ public class DovizServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String jj = null;
         try {
-            jj = givenAmount_whenConversion_thenNotNull();
+            givenAmount_whenConversion_thenNotNull();
         } catch (CurrencyConverterException e) {
             e.printStackTrace();
         }
+//
+//        currencies.add(new currency("USD" ,1/Float.valueOf(rates.getUSD())));
+//        currencies.add(new currency("EUR" ,1/Float.valueOf(rates.getEUR())));
 
         Map<String, Object> context = new HashMap<String, Object>();
-        context.put("dolarKuru", jj);
 
-        String action = Optional.ofNullable(req.getParameter("actionType")).orElse("");
+        context.put("dolarKuru", 1/Float.valueOf(rates.getUSD()));
+        context.put("euroKuru", 1/Float.valueOf(rates.getEUR()));
+//        context.put("currencies", currencies);
 
         resp.setContentType("text/html;charset=utf-8");
-
         templateRenderer.render(DOVIZ_SCREEN_TEMPLATE, context, resp.getWriter());
     }
 
 
 
-    public String givenAmount_whenConversion_thenNotNull() throws CurrencyConverterException, IOException {
-        URL url = new URL("https://api.currencyfreaks.com/latest?apikey=d9b286cad7984661ab465673edd9683b");
+    public void givenAmount_whenConversion_thenNotNull() throws CurrencyConverterException, IOException {
+        URL url = new URL("https://api.currencyfreaks.com/latest?apikey=d9b286cad7984661ab465673edd9683b&base=TRY");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
 
@@ -93,18 +98,40 @@ public class DovizServlet extends HttpServlet {
         while ((inputLine = in.readLine()) != null) {
             content.append(inputLine);
         }
-        JsonObject jsonObject = new JsonParser().parse(String.valueOf(content)).getAsJsonObject();
-        JsonElement rates = jsonObject.get("rates");
-        JsonObject jsonRates = rates.getAsJsonObject();
-        JsonElement jj = jsonRates.get("TRY");
 
-        logger.info("kur: {}", jj);
+        Gson gson = new Gson();
+        Root root = gson.fromJson(String.valueOf(content), Root.class);
 
+        this.rates = root.getRates();
         logger.error("errorkur: ");
 
         in.close();
         con.disconnect();
+    }
+}
 
-        return String.valueOf(jj);
+class currency {
+    String name;
+    Float unit;
+
+    public currency(String name, Float unit) {
+        this.name = name;
+        this.unit = unit;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Float getUnit() {
+        return unit;
+    }
+
+    public void setUnit(Float unit) {
+        this.unit = unit;
     }
 }
