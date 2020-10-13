@@ -18,9 +18,9 @@
     <resource type="download" name="images/" location="/images"/>  
     <context>intern</context> 
   </web-resource>  
-<!--  <rest name="My Rest Resource" i18n-name-key="my-rest-resource.name" key="my-rest-resource" path="/myrestresource" version="1.0">-->
-<!--    <description key="my-rest-resource.description">The My Rest Resource Plugin</description>-->
-<!--  </rest>-->
+  <rest name="My Rest Resource" i18n-name-key="my-rest-resource.name" key="my-rest-resource" path="/myrestresource" version="1.0">
+    <description key="my-rest-resource.description">The My Rest Resource Plugin</description>
+  </rest>
 
   <servlet name="Issue CRUD" i18n-name-key="issue-crud.name" key="issue-crud" class="com.veniture.plugins.tutorial.servlet.DovizServlet">
     <description key="issue-crud.description">The Issue CRUD Plugin</description>

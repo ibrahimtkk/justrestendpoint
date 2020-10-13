@@ -3,6 +3,7 @@ package com.veniture.plugins.tutorial.servlet;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.templaterenderer.TemplateRenderer;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -10,6 +11,7 @@ import com.google.gson.JsonParser;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
 import com.veniture.plugins.tutorial.dto.Rates;
 import com.veniture.plugins.tutorial.dto.Root;
+import org.apache.velocity.VelocityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +39,11 @@ public class DovizServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(DovizServlet.class);// The transition ID
     private static final String DOVIZ_SCREEN_TEMPLATE = "/templates/doviz.vm";
     private Rates rates;
-    private List<currency> currencies = new ArrayList<>();
+    private ArrayList list = new ArrayList();
+    private ArrayList currencies = new ArrayList<>();
+    private List<String> names = new ArrayList<>();
+    private List<Float> units = new ArrayList<>();
+    Map map = new HashMap();
 
     @JiraImport
     private TemplateRenderer templateRenderer;
@@ -65,24 +71,64 @@ public class DovizServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            givenAmount_whenConversion_thenNotNull();
-        } catch (CurrencyConverterException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            givenAmount_whenConversion_thenNotNull();
+//        } catch (CurrencyConverterException e) {
+//            e.printStackTrace();
+//        }
 //
+
+        URL url = new URL("http://localhost:8089/rest/myrestresource/1.0/message");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+
+
 //        currencies.add(new currency("USD" ,1/Float.valueOf(rates.getUSD())));
 //        currencies.add(new currency("EUR" ,1/Float.valueOf(rates.getEUR())));
+//
+//        list.add(new currency("USD", 1/Float.valueOf(rates.getUSD())));
+//        list.add(new currency("EUR", 1/Float.valueOf(rates.getEUR())));
 
-        Map<String, Object> context = new HashMap<String, Object>();
 
-        context.put("dolarKuru", 1/Float.valueOf(rates.getUSD()));
-        context.put("euroKuru", 1/Float.valueOf(rates.getEUR()));
+//        names.add("USD"); names.add("EUR");
+//        units.add(1/Float.valueOf(rates.getUSD())); units.add(1/Float.valueOf(rates.getEUR()));
+
+        Map<String, Object> context = new HashMap();
+
+        Gson gson = new Gson();
+        RestCurrency restCurrency = gson.fromJson(String.valueOf(content), RestCurrency.class);
+//        VelocityContext context2 = new VelocityContext();
+
+
+
+        context.put("dolarKuru", restCurrency.getValue());
+
+
+//        context.put("euroKuru", 1/Float.valueOf(rates.getEUR()));
 //        context.put("currencies", currencies);
+//        context.put("names", names);
+//        context.put("units", units);
+//        context.put("list", list);
 
         resp.setContentType("text/html;charset=utf-8");
         templateRenderer.render(DOVIZ_SCREEN_TEMPLATE, context, resp.getWriter());
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -133,5 +179,21 @@ class currency {
 
     public void setUnit(Float unit) {
         this.unit = unit;
+    }
+}
+
+class RestCurrency {
+    String value;
+
+    public RestCurrency(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }
