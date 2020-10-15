@@ -10,49 +10,8 @@
 
     <script>
         AJS.$(document).ready(function () {
-##            #foreach($currency in $currencies)
-##                var el = "$currency";
-##                var list = "$currencies"
-##                console.log("ddd: ", "'$currencies.getName()'")
-##                console.log("data: " , list);
-##                console.log("ilk: ", list[0])
-##                console.log("ele: ", list[0].getName())
-##            #end
-##             var newRow = $("<tr>");
-##             var newRow2 = $("<tr>");
-##             var newRow3 = $("<tr>");
-##             var cols = "";
-##
-## ##            #foreach( $currency in $currencies )
-##                 ## console.log("...: " + $currency);
-##             ##            #end
-##             // cols += '<tr>'
-##             cols += '<td> Dolar </td>';
-##             cols += '<td> $dolarKuru </td>';
-##             cols += '</tr>';
-##             newRow.append(cols);
-##             cols = "";
-##             // cols += '</tr'
-##             // cols += '<tr>'
-##             cols += '<td> Euro </td>';
-##             cols += '<td> $euroKuru </td>';
-##             cols += '</tr>';
-##             newRow2.append(cols);
-##
-##             cols = "";
-##             cols += "<td> curr </td>";
-##             #foreach( $currency in $currencies )
-##                 cols += "<td> $currency.getName() </td>"
-##             #end
-
-
-            //
-            // cols += '</tr>';
-            //
-            // newRow3.append(cols);
-            // $("table.table-bordered").append(newRow);
-            // $("table.table-bordered").append(newRow2);
-            // $("table.table-bordered").append(newRow3);
+            var curList = "$curList";
+            console.log("curList: ", curList);
         });
     </script>
 </head>
@@ -66,32 +25,20 @@
                 <th scope="col">TL</th>
             </tr>
         </thead>
+##        <tbody>
+##            <tr>
+##                <td>Dolar</td>
+##                <td>$dolarKuru</td>
+##            </tr>
+##        </tbody>
         <tbody>
+            #foreach( $el in $curList )
             <tr>
-                <td>Dolar</td>
-                <td>$dolarKuru</td>
+                <td>$el.getName()</td>
+                <td>$el.getUnit()</td>
             </tr>
-##            <tr>
-##                <td>Euro</td>
-##                <td>$euroKuru</td>
-##            </tr>
-        </tbody>
-##        <tbody>
-##            #foreach( $el in $list )
-##            <tr>
-##                <td>$el.getUnit()</td>
-##                <td>$el.name</td>
-##            </tr>
-##            #end
-##        <tbody>
-##        <tbody>
-##            #foreach( $cur in $currencies )
-##                <tr>
-##                    <td> $cur.USD </td>
-##                    <td> $currencies.getUnit() </td>
-##                </tr>
-##            #end
-##        <tbody>
+            #end
+        <tbody>
     </table>
 
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>

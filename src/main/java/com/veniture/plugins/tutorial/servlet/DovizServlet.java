@@ -1,14 +1,19 @@
 package com.veniture.plugins.tutorial.servlet;
 
+import com.atlassian.jira.util.json.JSONArray;
+import com.atlassian.jira.util.json.JSONException;
+import com.atlassian.jira.util.json.JSONObject;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
+import com.veniture.plugins.tutorial.dto.Currency;
 import com.veniture.plugins.tutorial.dto.Rates;
 import com.veniture.plugins.tutorial.dto.Root;
 import org.apache.velocity.VelocityContext;
@@ -32,6 +37,11 @@ import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.config.ConstantsManager;
 
 import com.atlassian.jira.security.JiraAuthenticationContext;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
 
 @Scanned
 public class DovizServlet extends HttpServlet {
@@ -71,17 +81,32 @@ public class DovizServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        try {
-//            givenAmount_whenConversion_thenNotNull();
-//        } catch (CurrencyConverterException e) {
-//            e.printStackTrace();
-//        }
+//        String address = "http://localhost:8089/rest/myrestresource/1.0/api/listmessage";
 //
+//        URL url = new URL(address);
+//        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+//        con.setRequestMethod("GET");
+//        BufferedReader in = new BufferedReader(
+//                new InputStreamReader(con.getInputStream()));
+//        String inputLine;
+//        StringBuffer content = new StringBuffer();
+//        while ((inputLine = in.readLine()) != null) {
+//            content.append(inputLine);
+//        }
+//        Map<String, Object> context = new HashMap();
+//        Gson gson = new Gson();
+//        RestCurrency restCurrency = gson.fromJson(String.valueOf(content), RestCurrency.class);
+//        context.put("dolarKuru", restCurrency.getValue());
+//        resp.setContentType("text/html;charset=utf-8");
+//        templateRenderer.render(DOVIZ_SCREEN_TEMPLATE, context, resp.getWriter());
 
-        URL url = new URL("http://localhost:8089/rest/myrestresource/1.0/message");
+
+
+        String address = "http://localhost:8089/rest/myrestresource/1.0/api/listmessage";
+
+        URL url = new URL(address);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
         String inputLine;
@@ -89,35 +114,48 @@ public class DovizServlet extends HttpServlet {
         while ((inputLine = in.readLine()) != null) {
             content.append(inputLine);
         }
+        String cont = String.valueOf(content);
 
+        cont = cont.replaceAll("\\\\", "");
 
-//        currencies.add(new currency("USD" ,1/Float.valueOf(rates.getUSD())));
-//        currencies.add(new currency("EUR" ,1/Float.valueOf(rates.getEUR())));
-//
-//        list.add(new currency("USD", 1/Float.valueOf(rates.getUSD())));
-//        list.add(new currency("EUR", 1/Float.valueOf(rates.getEUR())));
+        cont = cont.substring(10, cont.length()-2);
+        cont = cont.toUpperCase();
+        Gson gson = new Gson(); // Or use new GsonBuilder().create();
+        Rates target2 = gson.fromJson(cont, Rates.class); // deserializes json into target2
 
+        List<String> keyList = new ArrayList();
 
-//        names.add("USD"); names.add("EUR");
-//        units.add(1/Float.valueOf(rates.getUSD())); units.add(1/Float.valueOf(rates.getEUR()));
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(cont.trim());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Iterator<String> keys = jsonObject.keys();
+
+        while(keys.hasNext()) {
+            String key = keys.next();
+            keyList.add(key);
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(jsonObject);
+
+        List curList = new ArrayList();
+
+        for (int i=0; i<keyList.toArray().length; i++){
+            String name = keyList.get(i);
+            try {
+                curList.add(new Currency(name, 1/Float.valueOf(String.valueOf(jsonObject.get(name)))));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         Map<String, Object> context = new HashMap();
-
-        Gson gson = new Gson();
         RestCurrency restCurrency = gson.fromJson(String.valueOf(content), RestCurrency.class);
-//        VelocityContext context2 = new VelocityContext();
 
-
-
-        context.put("dolarKuru", restCurrency.getValue());
-
-
-//        context.put("euroKuru", 1/Float.valueOf(rates.getEUR()));
-//        context.put("currencies", currencies);
-//        context.put("names", names);
-//        context.put("units", units);
-//        context.put("list", list);
-
+        context.put("curList", curList);
         resp.setContentType("text/html;charset=utf-8");
         templateRenderer.render(DOVIZ_SCREEN_TEMPLATE, context, resp.getWriter());
     }
@@ -156,31 +194,7 @@ public class DovizServlet extends HttpServlet {
     }
 }
 
-class currency {
-    String name;
-    Float unit;
 
-    public currency(String name, Float unit) {
-        this.name = name;
-        this.unit = unit;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Float getUnit() {
-        return unit;
-    }
-
-    public void setUnit(Float unit) {
-        this.unit = unit;
-    }
-}
 
 class RestCurrency {
     String value;
